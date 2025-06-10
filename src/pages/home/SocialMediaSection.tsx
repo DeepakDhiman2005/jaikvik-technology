@@ -53,6 +53,7 @@ const SocialMediaSection = () => {
                             <ReelVideoCard
                                 src={item as string}
                                 onHover={handleVideoHover}
+                                poster="/images/poster1.png"
                             />
                         </SwiperSlide>
                     ))}

@@ -55,6 +55,7 @@ const OurTestimonials = () => {
                                 onHover={handleVideoHover}
                                 aspectRatio="16/9"
                                 scale="hover:scale-125"
+                                poster="/images/poster2.png"
                             />
                         </SwiperSlide>
                     ))}

@@ -5,7 +5,8 @@ const ReelVideoCard: React.FC<{
   onHover: (value: boolean) => void;
   aspectRatio?: string;
   scale?: string;
-}> = ({ src = "", onHover, aspectRatio = "9/16", scale = "hover:scale-110" }) => {
+  poster?: string;
+}> = ({ src = "", onHover, aspectRatio = "9/16", scale = "hover:scale-110", poster = "/images/poster1.png"  }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Adjust video height based on aspect ratio
@@ -56,6 +57,7 @@ const ReelVideoCard: React.FC<{
         ref={videoRef}
         muted
         controls={false}
+        poster={poster}
         loop
         preload="auto"
         className="w-full h-full object-cover"

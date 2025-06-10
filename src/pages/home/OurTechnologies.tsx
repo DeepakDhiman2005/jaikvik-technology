@@ -1,23 +1,39 @@
-import { useRef } from "react";
+import { useState, useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Swiper as SwiperType } from "swiper";
 import { Navigation, Autoplay } from "swiper/modules";
+import "swiper/swiper-bundle.css";
+import websites from "../../configs/all-websites";
 import ArrowLeft from "../../components/arrows/ArrowLeft";
 import ArrowRight from "../../components/arrows/ArrowRight";
-import technologies from "../../configs/all-technologies";
-import TechnologyCard from "../../components/cards/TechnologyCard";
+import WebsiteCard from "../../components/cards/WebsiteCard";
 
 const OurTechnologies = () => {
     const swiperRef = useRef<SwiperType | null>(null);
+    const [activeIndex, setActiveIndex] = useState(0);
+    const [isAutoSliding, setIsAutoSliding] = useState(true);
 
-    const handleHover = (value: boolean) => {
-        if (swiperRef.current) {
-            if (value) {
-                swiperRef.current.autoplay.stop(); // Pause autoplay on hover
-            } else {
-                swiperRef.current.autoplay.start(); // Resume autoplay when mouse leaves
-            }
+    // When swiper changes slide, update active index and start scroll again
+    const onSlideChange = (swiper: SwiperType) => {
+        setActiveIndex(swiper.realIndex);
+        setIsAutoSliding(true);
+    };
+
+    // Called from WebsiteCard after scroll transition end
+    const handleScrollComplete = () => {
+        if (isAutoSliding) {
+            let timer = setInterval(() => {
+                swiperRef.current?.slideNext();
+                clearInterval(timer);
+            }, 200);
         }
+    };
+
+    // Stop autoplay and scroll on arrow click
+    const handleArrowClick = (direction: "prev" | "next") => {
+        setIsAutoSliding(false);
+        if (direction === "prev") swiperRef.current?.slidePrev();
+        else swiperRef.current?.slideNext();
     };
 
     return (
@@ -32,44 +48,36 @@ const OurTechnologies = () => {
             <div className="w-full group relative">
                 <Swiper
                     modules={[Navigation, Autoplay]}
-                    spaceBetween={10}
-                    slidesPerView={4.5}
+                    spaceBetween={15}
+                    slidesPerView={2.5}
+                    loop
+                    onSwiper={(swiper) => {
+                        swiperRef.current = swiper;
+                        setActiveIndex(swiper.realIndex);
+                    }}
+                    onSlideChange={onSlideChange}
+                    className="mySwiper"
                     navigation={{
                         nextEl: ".swiper-button-next",
                         prevEl: ".swiper-button-prev",
                     }}
-                    loop
-                    autoplay={{
-                        delay: 3000,
-                        disableOnInteraction: false,
-                    }}
-                    onSwiper={(swiper) => {
-                        swiperRef.current = swiper;
-                    }}
-                    className="mySwiper !overflow-visible"
+                    autoplay={false} // we control slide manually after scroll
                 >
-                    {technologies.map((item, index) => (
-                        <SwiperSlide key={index} className="hover:z-50">
-                            <TechnologyCard
-                                website={{
-                                    url: item.image,
-                                    alt: 'image',
-                                    imageSrc: item.image,
-                                }}
-                                poster={item.poster}
+                    {websites.map((website, index) => (
+                        <SwiperSlide key={index}>
+                            <WebsiteCard
                                 index={index}
-                                onHoverStart={() => handleHover(true)}
-                                onHoverEnd={() => handleHover(false)}
+                                website={website}
+                                scrollActive={index === activeIndex}
+                                onScrollComplete={handleScrollComplete}
                             />
                         </SwiperSlide>
                     ))}
                 </Swiper>
-                <ArrowLeft onClick={() => {
-                    swiperRef.current?.slidePrev();
-                }} />
-                <ArrowRight onClick={() => {
-                    swiperRef.current?.slideNext();
-                }} />
+
+                {/* Arrows */}
+                <ArrowLeft onClick={() => handleArrowClick("prev")} />
+                <ArrowRight onClick={() => handleArrowClick("next")} />
             </div>
             <div className="swiper-pagination top-3 text-right pr-5 -z-10"></div>
         </div>

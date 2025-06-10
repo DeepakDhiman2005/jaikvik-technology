@@ -45,7 +45,7 @@ const sections = [
 const sectionHeights = [
   400, // HeroSection
   510, // WebsiteSection
-  310,
+  510,
   600, // SocialMediaSection
   360, // SocialMediaPostSection
   230, // OurVideosSection
